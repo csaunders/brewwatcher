@@ -1,0 +1,11 @@
+GEM
+  specs:
+    serialport (1.1.0)
+    sqlite3 (1.3.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  serialport
+  sqlite3
