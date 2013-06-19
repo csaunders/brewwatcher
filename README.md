@@ -25,3 +25,21 @@ There are probably a few other things, but this is all that's needed for the hea
  - golang for something... don't know quite what
  - ruby as my crutch while learning golang
    - I actually want to get this thing done somewhat quickly!
+
+# brewweb
+
+This is a simple webserver written in golang that will serve the information logged to the world, or something.
+
+If you'd like to see how it works, just run `go build brewweb` and you should be good to go.
+
+## Dependencies
+
+* I do rely on the SQLite package, which can be made available by invoking the following command:
+** `go get code.google.com/hg/sqlite`
+* I don't have anything really setup for my database yet so I've included the `seed.sql` file. You can get the database ready to roll by doing the following:
+
+```
+$ sqlite3 test.db
+> .read seeds.sql
+> .exit
+```
