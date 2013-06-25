@@ -35,11 +35,11 @@ If you'd like to see how it works, just run `go build brewweb` and you should be
 ## Dependencies
 
 * I do rely on the SQLite package, which can be made available by invoking the following command:
-** `go get code.google.com/hg/sqlite`
+** `go get code.google.com/p/gosqlite/sqlite`
 * I don't have anything really setup for my database yet so I've included the `seed.sql` file. You can get the database ready to roll by doing the following:
 
 ```
 $ sqlite3 test.db
-> .read seeds.sql
+> .read seed.sql
 > .exit
 ```
