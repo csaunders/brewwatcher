@@ -5,10 +5,12 @@ import (
   "code.google.com/p/gosqlite/sqlite"
   "net/http"
   "encoding/json"
+  "strconv"
 )
 
 const InsertMeasurement string = "INSERT INTO temperatures(logged_at, temperature) VALUES"
 const GetAllMeasurement string = "SELECT * FROM temperatures;"
+const FindMeasurement string = "SELECT * FROM temperatures where _id = ?"
 
 type Measurement struct {
   Id int
@@ -45,6 +47,25 @@ func (m *Measurement) all(c *sqlite.Conn) []Measurement{
   return ms
 }
 
+func (m *Measurement) find(id int, c *sqlite.Conn) Measurement {
+  statement, err := c.Prepare(FindMeasurement)
+  if err != nil {
+    fmt.Println("Error while finding", err)
+  }
+  err = statement.Exec(id)
+  statement.Next()
+  var measurement Measurement
+  err = statement.Scan(&measurement.Id, &measurement.LoggedAt, &measurement.Temperature, &measurement.BrewId)
+  if err != nil {
+    fmt.Printf("Error while getting row data: %s\n", err)
+  }
+  return measurement
+}
+
+func (m *Measurement) isValid() bool {
+  return m.Id > 0
+}
+
 type Brew struct {
   Id int
   Name string
@@ -64,6 +85,14 @@ func measurements() []Measurement {
   return m.all(conn)
 }
 
+func measurement(id int) Measurement {
+  conn := openDatabase()
+  defer conn.Close()
+
+  var m Measurement
+  return m.find(id, conn)
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
   conn := openDatabase()
   defer conn.Close()
@@ -76,9 +105,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-const measurementsPath = "/measurements"
+const measurementsPath = "/measurements/"
 const measurementsPathLen = len(measurementsPath)
 func measurementsHandler(w http.ResponseWriter, r *http.Request) {
+  if(r.Header.Get("Content-Type") != "application/json") {
+    fmt.Fprintf(w, "Invalid Request")
+    return
+  }
+  w.Header().Set("Content-Type", "application/json")
   switch r.Method {
   case "POST":
     return
@@ -88,18 +122,30 @@ func measurementsHandler(w http.ResponseWriter, r *http.Request) {
     if len(remainingPath) == 0 {
       listMeasurements(w, r)
     } else {
-      //showMeasurement(remainingPath, w, r)
+      showMeasurement(remainingPath, w, r)
     }
   }
 }
 
 func listMeasurements(w http.ResponseWriter, r *http.Request) {
-  if(r.Header.Get("Content-Type") != "application/json") {
-    fmt.Fprintf(w, "Invalid Request")
+  j, _  := json.Marshal(measurements())
+  w.Write([]byte(j))
+}
+
+func showMeasurement(path string, w http.ResponseWriter, r *http.Request) {
+  id, err := strconv.Atoi(path)
+  if err != nil {
+    w.WriteHeader(http.StatusNotFound)
+    fmt.Fprintf(w, "%q is not a valid identifier", path)
     return
   }
-  w.Header().Set("Content-Type", "application/json")
-  j, _  := json.Marshal(measurements())
+  measurement := measurement(id)
+  if !measurement.isValid() {
+    w.WriteHeader(http.StatusNotFound)
+    fmt.Fprintf(w, "No measurement exists with id %d", id)
+    return
+  }
+  j, _ := json.Marshal(measurement)
   w.Write([]byte(j))
 }
 
@@ -108,15 +154,3 @@ func main() {
   http.HandleFunc("/", indexHandler)
   http.ListenAndServe(":8080", nil)
 }
-
-// func main() {
-
-//   conn, _ := sqlite.Open("test.db")
-//   defer conn.Close()
-
-//   var m Measurement
-//   ms := m.all(conn)
-//   for _, measurement := range ms {
-//     fmt.Println(measurement.toString())
-//   }
-// }
