@@ -66,10 +66,23 @@ func (m *Measurement) isValid() bool {
   return m.Id > 0
 }
 
+const InsertBrew string = "INSERT INTO brews(name, active) VALUES"
+const GetAllBrew string = "SELECT * FROM brews;"
+const FindBrew string = "SELECT * FROM brews where _id = ?"
+
 type Brew struct {
   Id int
   Name string
   Active bool
+}
+
+func (m *Brew) save(c *sqlite.Conn) {
+  insert := fmt.Sprintf("%s(%s, %b)", InsertBrew, m.Name, m.Active)
+  fmt.Println(insert)
+}
+
+func (m *Brew) all(c *sqlite.Conn) {
+  
 }
 
 func openDatabase() *sqlite.Conn {
@@ -127,6 +140,24 @@ func measurementsHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+const brewsPath = "/brews/"
+const brewsPathLen = len(brewsPath)
+func brewsHandler(w http.ResponseWriter, r *http.Request) {
+  if(r.Header.Get("Content-Type") != "application/json") {
+    fmt.Printf(w, "Invalid Request")
+    return
+  }
+  w.Header().Set("Content-Type", "application/json")
+  switch r.Method {
+  case "POST":
+    // createBrew(w, r)
+    return
+  case "GET":
+    // listBrews(w, r)
+    return
+  }
+}
+
 func listMeasurements(w http.ResponseWriter, r *http.Request) {
   j, _  := json.Marshal(measurements())
   w.Write([]byte(j))
@@ -151,6 +182,7 @@ func showMeasurement(path string, w http.ResponseWriter, r *http.Request) {
 
 func main() {
   http.HandleFunc(measurementsPath, measurementsHandler)
+  http.HandleFunc(brewsPath, brewsHandler)
   http.HandleFunc("/", indexHandler)
   http.ListenAndServe(":8080", nil)
 }
