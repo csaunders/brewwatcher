@@ -1,3 +1,4 @@
+source 'https://rubygems.org'
 gem 'serialport'
 gem 'sqlite3'
 gem 'sinatra'
