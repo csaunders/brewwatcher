@@ -1,0 +1,27 @@
+<% content_for :title do %>
+- <%= @brew.name %>
+<% end %>
+
+<div class="row">
+  <div class="small-6 offset-1 columns" id="chart"></div>
+
+  <div class="small-5 columns">
+    <h3>
+      <%= @brew.name %>
+    </h3>
+    <% if @brew.active? %>
+      <p><span class="label">Being Monitored</span></p>
+    <% end %>
+    <ul class="no-bullet">
+      <li>
+        <big>Style:</big> <span class="subheader">American Pale Ale</span>
+      </li>
+      <li>
+        <big>Temperature Range</big> <span class="subheader">18 &deg;C - 22 &deg;C</span>
+      </li>
+    </ul>
+</div>
+
+<% content_for :additional_js do %>
+<script type="text/javascript" src="/js/tempchart.js"></script>
+<% end %>

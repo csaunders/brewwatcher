@@ -7,6 +7,7 @@ module Datastore
       adapter: 'sqlite3',
       database: 'db/db.sqlite'
     )
+    ActiveRecord::Base.include_root_in_json = false
 
     parse_to_commands(File.read('db/schema.sql')).each do |cmd|
       ActiveRecord::Base.connection.execute cmd
@@ -20,12 +21,10 @@ end
 
 class Temperature < ActiveRecord::Base
   belongs_to :brew
-  attr_accessible :reading, :logged_at
 end
 
 class Brew < ActiveRecord::Base
   has_many :temperatures
-  attr_accessible :name, :active
 
   def self.active_brew
     Brew.where(active: true).first

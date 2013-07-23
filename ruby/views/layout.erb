@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Brewwatcher Web <%= yield_content :title %></title>
+        <link href="/css/application.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="/css/foundation.css" />
+  
+
+        <script src="/js/vendor/custom.modernizr.js"></script>
+    </head>
+    <body>
+        <%= yield %>
+
+        <script type="text/javascript" src="/js/vendor/zepto.js"></script>
+        <script type="text/javascript" src="/js/foundation.min.js"></script>
+        <script type="text/javascript" src="/js/d3.v3.js"></script>
+        <script type="text/javascript" src="/js/reqwest.js"></script>
+        <%= yield_content :additional_js %>
+    </body>
+</html> 

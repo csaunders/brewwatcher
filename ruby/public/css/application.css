@@ -1,0 +1,22 @@
+// Charting
+#chart {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  /*display: none;*/
+}
+
+.line {
+  fill: none;
+  /*stroke: steelblue;*/
+  stroke: white;
+  stroke-width: 3px;
+}
