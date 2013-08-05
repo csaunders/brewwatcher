@@ -11,7 +11,10 @@ CREATE INDEX IF NOT EXISTS temperature_id_index ON temperatures(id);
 CREATE TABLE IF NOT EXISTS brews (
   id INTEGER PRIMARY KEY ASC,
   name varchar(255),
-  active boolean DEFAULT 0
+  active boolean DEFAULT 0,
+  lower_fermentation_temperature real DEFAULT 18,
+  upper_fermentation_temperature real DEFAULT 22,
+  style varchar(255)
 );
 --execcmd
 CREATE INDEX IF NOT EXISTS  brews_id_index ON brews(id);

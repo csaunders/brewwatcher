@@ -57,6 +57,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord
+  activesupport
   serialport
   sinatra
   sinatra-contrib

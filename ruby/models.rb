@@ -1,5 +1,7 @@
 require 'active_record'
 require 'sqlite3'
+require 'time'
+
 module Datastore
   COMMAND = "--execcmd"
   def self.connect!
@@ -20,7 +22,14 @@ module Datastore
 end
 
 class Temperature < ActiveRecord::Base
+  SEPARATOR = "|"
   belongs_to :brew
+
+  def self.parse(message, brew = nil)
+    brew ||= Brew.active_brew
+    date, reading, *rest = message.split(SEPARATOR)
+    brew.temperatures.new(logged_at: DateTime.parse(date), reading: reading.to_f)
+  end
 end
 
 class Brew < ActiveRecord::Base
@@ -28,6 +37,10 @@ class Brew < ActiveRecord::Base
 
   def self.active_brew
     Brew.where(active: true).first
+  end
+
+  def average_temp
+    temperatures.inject(0){|r, t| r += t.reading} / temperatures.count
   end
 
 end

@@ -1,53 +1,78 @@
 require 'serialport'
-require 'sqlite3'
+require File.dirname(__FILE__) + '/models'
+Datastore.connect!
 
-class Temperature
-  def initialize(tempstring)
-    @temp = tempstring
-  end
-end
-
-class Communicator
-  BAUD_RATE = 9600
-  DATA_BITS = 8
-  STOP_BITS = 1
-  attr_reader :serial
-  def initialize(tty_name)
-    @serial = SerialPort.new(tty_name, BAUD_RATE, DATA_BITS, STOP_BITS)
-  end
-
-  def send_message(message)
-    serial.puts(message)
-  end
-
-  def read_message
-    msg = ""
-    while true do
-      contents = serial.gets
-      msg += contents if contents
-      break if contents == nil && msg.length > 0
+module Serial
+  class ResponseQueue
+    def initialize(serial)
+      @serial = serial
+      @queue = []
+      @mutex = Mutex.new
+      @processing = true
+      @reader = Thread.new do
+        while @processing
+          enqueue(@serial.gets.chomp)
+        end
+      end
     end
-    msg
+
+    def read_message
+      @mutex.synchronize do
+        @queue.shift
+      end
+    end
+
+    def enqueue(message)
+      @mutex.synchronize do
+        @queue << message
+      end
+    end
+
+    def stop!
+      @mutex.synchronize do
+        @processing = false
+      end
+    end
   end
 
-  def get_temperature
-    send_message("timestamp temp")
-    Temperature.new(read_message)
-  end
+  class Communicator
+    BAUD_RATE = 9600
+    DATA_BITS = 8
+    STOP_BITS = 1
+    attr_reader :serial, :queue
+    def initialize(tty_name)
+      @serial = SerialPort.new(tty_name, BAUD_RATE, DATA_BITS, STOP_BITS)
+      @queue = ResponseQueue.new(@serial)
+    end
 
-end
+    def send_message(message)
+      serial.puts(message)
+    end
 
-class DataLogger
-  def initialize(database_path, schema_file=nil)
-    @db = SQLite3::Database.new database_path
-    @db.execute(File.read(schema)) if schema
-  end
+    def read_message(pattern = nil)
+      while true do
+        message = @queue.read_message
+        break if pattern.nil? || message =~ pattern
+      end
+      message
+    end
 
-  def save(temperature)
-    insert =<<SQL
-  INSERT INTO temperatures (logged_at, temperature)
-  VALUES (?, ?)
-SQL
-    @db.execute(insert, temperature.at, temperature.value)
+    def get_temperature
+      send_message("timestamp temp")
+      Temperature.parse(read_message(/\|/))
+    end
+
+    def enable_display
+      send_message("enable display")
+    end
+
+    def disable_display
+      send_message("disable display")
+    end
+
+    def done!
+      @serial.close
+      @queue.stop!
+    end
   end
 end

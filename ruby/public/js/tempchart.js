@@ -78,6 +78,7 @@ var success = function(data) {
   data.forEach(function(d){
     d.logged_at = parseDate(d.logged_at);
     d.reading = +d.reading;
+    console.log(d);
   });
 
   x.domain(d3.extent(data, function(d) { return d.logged_at; }));

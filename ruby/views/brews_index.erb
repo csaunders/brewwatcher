@@ -1,1 +1,29 @@
-Hello World
+<div class="row">
+  <div class="small-8 columns">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Brew Name</th>
+          <th>Data points</th>
+          <th>Average Fermentation Temp</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% for brew in @brews %>
+        <tr>
+          <td><a href="/brews/<%= brew.id %>"><%= brew.name %></a></td>
+          <td><%= brew.temperatures.count %></td>
+          <td><%= brew.average_temp %></td>
+          <td></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="small-4 columns">
+    <%= erb :control_panel %>
+  </div>
+</div>

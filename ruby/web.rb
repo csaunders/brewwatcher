@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'sinatra/content_for'
 require 'json'
 require File.dirname(__FILE__) + '/models'
+require File.dirname(__FILE__) + '/serialcomms'
 
 class Web < Sinatra::Base
   helpers Sinatra::ContentFor
@@ -48,6 +49,16 @@ class Web < Sinatra::Base
     perform_render(model: temperature, redirect: path)
   end
 
+  get '/panel/enable' do
+    communicator.enable_display
+    redirect '/brews'
+  end
+
+  get '/panel/disable' do
+    communicator.disable_display
+    redirect '/brews'
+  end
+
   private
 
   def perform_render(options)
@@ -58,6 +69,10 @@ class Web < Sinatra::Base
     else
       erb options[:view]
     end
+  end
+
+  def communicator
+    @communicator ||= Serial::Communicator.new('/dev/tty.usbmodem1431')
   end
 
   def json?
