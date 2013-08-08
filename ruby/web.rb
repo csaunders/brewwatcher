@@ -14,7 +14,7 @@ class Web < Sinatra::Base
   end
 
   get '/' do
-    redirect '/brews'
+    redirect to('/brews')
   end
 
   get '/brews' do

@@ -2,6 +2,11 @@
 - <%= @brew.name %>
 <% end %>
 
+<% content_for :header do %>
+  <h1><%= @brew.name %></h1>
+  <h4 class="subheader"><%= @brew.style %></h4>
+<% end %>
+
 <div class="row">
   <div class="small-12 columns">
     <h3>

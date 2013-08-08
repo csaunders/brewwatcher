@@ -10,6 +10,14 @@
         <script src="/js/vendor/custom.modernizr.js"></script>
     </head>
     <body>
+        <header>
+            <div class="row header center">
+                <div class="small-6 small-centered columns">
+                    <%= yield_content :header %>
+                </div>
+            </div>
+        </header>
+
         <%= yield %>
 
         <script type="text/javascript" src="/js/vendor/zepto.js"></script>
