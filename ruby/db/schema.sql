@@ -25,3 +25,8 @@ CREATE TRIGGER IF NOT EXISTS  new_brew_trigger
   BEGIN
     UPDATE brews SET active = 'f' WHERE active = 't';
   END;
+--execcmd
+CREATE TABLE IF NOT EXISTS active_tty (
+  id INTEGER PRIMARY KEY ASC,
+  name varchar(255)
+);

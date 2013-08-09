@@ -29,6 +29,22 @@
             </div>
         </header>
 
+        <% unless @active_tty %>
+        <div class="row alert-box alert">
+            <div class="large-9 columns offset-1">
+                <h3 class="light">Arduino TTY is not configured!</h3>
+                <p class="light subheader">
+                    Before actions can be performed via the web
+                    interface you need to configure which Serial
+                    TTY to connect to.
+                </p>
+            </div>
+            <div class="large-2 columns">
+                <a href="/tty" class="button button-secondary">Configure</a>
+            </div>
+        </div>
+        <% end %>
+
         <%= yield %>
 
         <script type="text/javascript" src="/js/vendor/zepto.js"></script>

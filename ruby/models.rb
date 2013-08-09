@@ -51,5 +51,18 @@ class Brew < ActiveRecord::Base
     return nil if temperatures.count == 0
     temperatures.inject(0){|r, t| r += t.reading} / temperatures.count
   end
+end
 
+class ActiveTty < ActiveRecord::Base
+  self.table_name = 'active_tty'
+  def self.available_ttys
+    ttys = Dir.entries('/dev').reject do |entry|
+      true unless entry =~ /tty([A-Z]|\.)|cu([A-Z]|\.)/
+    end
+    ttys.map { |name| ActiveTty.new(name: name) }
+  end
+
+  def device
+    "/dev/#{name}"
+  end
 end

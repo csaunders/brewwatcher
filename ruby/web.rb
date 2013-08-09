@@ -34,6 +34,7 @@ class Web < Sinatra::Base
   before do
     Datastore.connect!
     @breadcrumbs = BreadcrumbBuilder.build_crumbs(request.path_info)
+    @active_tty = ActiveTty.last
   end
 
   get '/' do
@@ -90,6 +91,27 @@ class Web < Sinatra::Base
   get '/panel/disable' do
     communicator.disable_display
     redirect '/brews'
+  end
+
+  get '/tty' do
+    @tty = ActiveTty.first
+    if @tty
+      erb :"tty_index"
+    else
+      redirect '/tty/configure'
+    end
+  end
+
+  get '/tty/configure' do
+    @active_tty = ActiveTty.new
+    @ttys = ActiveTty.available_ttys
+    erb :"configure_tty"
+  end
+
+  post '/tty' do
+    @tty = ActiveTty.first_or_initialize
+    @tty.update_attributes(name: params[:tty][:name])
+    redirect '/tty'
   end
 
   private

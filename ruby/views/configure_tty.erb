@@ -1,0 +1,39 @@
+<% content_for :header do %>
+  <h1>Arduino Serial TTY Configuration</h1>
+<% end %>
+
+<div class="row">
+  <div class="large-8 large-centered">
+    <p>
+      Select the device that represents the
+      serial interface of your arduino.
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-8 columns">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Device Name</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @ttys.each do |tty| %>
+        <tr>
+          <td><%= tty.device %></td>
+          <td>
+            <% form_tag '/tty', :method => :post do %>
+            <%= hidden_field_tag 'tty[name]', value: tty.name %>
+            <%= submit_tag 'Activate', :class => "button button-success" %>
+            <% end %>
+          </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

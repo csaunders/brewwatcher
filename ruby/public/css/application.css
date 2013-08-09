@@ -27,3 +27,11 @@ header {
   padding: 5px;
   margin-bottom: 25px;
 }
+
+.light {
+  color: white;
+}
+
+.light.subheader {
+  color: white;
+}
