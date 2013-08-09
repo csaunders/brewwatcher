@@ -1,16 +1,39 @@
 require 'sinatra/base'
 require 'sinatra/content_for'
 require 'json'
+require 'padrino-helpers'
 require File.dirname(__FILE__) + '/models'
 require File.dirname(__FILE__) + '/serialcomms'
 
+class Breadcrumb
+  attr_reader :name, :path
+  def initialize(name, path)
+    @name = name
+    @path = path
+  end
+end
+
+class BreadcrumbBuilder
+  def self.build_crumbs(path)
+    slices = path.split('/')
+    current_path = []
+    @crumbs = slices.map do |path|
+      current_path << path
+      name = path =~ /\d+/ ? Brew.find(path.to_i).name : path
+      Breadcrumb.new(name, current_path.join('/'))
+    end
+  end
+end
+
 class Web < Sinatra::Base
   helpers Sinatra::ContentFor
+  register Padrino::Helpers
   set :public_folder, File.dirname(__FILE__) + '/public'
   set :views, File.dirname(__FILE__) + '/views'
 
   before do
     Datastore.connect!
+    @breadcrumbs = BreadcrumbBuilder.build_crumbs(request.path_info)
   end
 
   get '/' do
@@ -23,10 +46,15 @@ class Web < Sinatra::Base
     perform_render(model: @brews, view: :"brews_index")
   end
 
+  get '/brews/new' do
+    @brew = Brew.new
+    erb :"new_brew"
+  end
+
   post '/brews' do
-    params = extract_params
-    creation_params = {name: params['name']}
-    creation_params = creation_params.merge(active: params['active']) unless params['active'].nil?
+    params = extract_params['brew']
+    creation_params = params
+    creation_params = params.merge(active: params['active']) unless params['active'].nil?
     new_brew = Brew.create(creation_params)
 
     perform_render(model: new_brew, redirect: "/brews/#{new_brew.id}")
@@ -34,6 +62,11 @@ class Web < Sinatra::Base
 
   get '/brews/:brew_id' do
     perform_render(model: brew, view: :"brew_show")
+  end
+
+  post '/brews/:brew_id/activate' do
+    brew.activate!
+    redirect "/brews/#{brew.id}"
   end
 
   get '/brews/:brew_id/temperatures' do

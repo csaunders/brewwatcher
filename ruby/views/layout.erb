@@ -11,8 +11,19 @@
     </head>
     <body>
         <header>
+            <ul class="breadcrumbs">
+                <% for crumb in @breadcrumbs %>
+                <% if crumb == @breadcrumbs.last %>
+                <li class="current">
+                    <% else %>
+                    <li>
+                        <% end %>
+                        <%= link_to crumb.name, crumb.path %>
+                    </li>
+                    <% end %>
+                </ul>
             <div class="row header center">
-                <div class="small-6 small-centered columns">
+                <div class="large-12 large-centered columns">
                     <%= yield_content :header %>
                 </div>
             </div>

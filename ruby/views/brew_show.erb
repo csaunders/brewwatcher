@@ -4,30 +4,35 @@
 
 <% content_for :header do %>
   <h1><%= @brew.name %></h1>
-  <h4 class="subheader"><%= @brew.style %></h4>
 <% end %>
 
 <div class="row">
-  <div class="small-12 columns">
-    <h3>
-      <%= @brew.name %>
-    </h3>
+  <div class="large-12 columns">
     <% if @brew.active? %>
     <p><span class="label">Being Monitored</span></p>
+    <% else %>
+      <% form_tag "/brews/#{@brew.id}/activate", :method => "put" do %>
+      <%= submit_tag "Make Active Brew", :class => "button" %>
+      <% end %>
     <% end %>
     <ul class="no-bullet">
       <li>
-        <big>Style:</big> <span class="subheader">American Pale Ale</span>
+        <big>Style:</big> <span class="subheader"><%= @brew.style %></span>
       </li>
       <li>
-        <big>Temperature Range</big> <span class="subheader">18 &deg;C - 22 &deg;C</span>
+        <big>Temperature Range</big>
+        <span class="subheader">
+          <%= @brew.lower_fermentation_temperature %>&deg;C
+           - 
+          <%= @brew.upper_fermentation_temperature %>&deg;C
+        </span>
       </li>
     </ul>
   </div>
 <div>
 
 <div class="row">
-  <div class="small-12 columns" id="chart"></div>
+  <div class="large-12 columns" id="chart"></div>
 </div>
 
 <% content_for :additional_js do %>

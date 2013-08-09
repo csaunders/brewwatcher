@@ -1,0 +1,42 @@
+<% content_for :header do %>
+<h1>Add another Brew</h1>
+<% end %>
+
+
+<div class="row">
+  <div class="large-12 large-center">
+    <p>
+      Provide the name of your next batch along 
+      with some additional style and fermentation
+      information.
+    </p>
+  </div>
+</div>
+<% form_for @brew, '/brews', :id => 'brew' do |f| %>
+  <div class="row">
+    <%= f.error_messages %>
+  </div>
+
+  <div class="row">
+    <div class="large-12">
+      <fieldset>
+        <legend>Specifications for new Brew</legend>
+
+        <label>Brew Name</label>
+        <%= f.text_field :name, :placeholder =>'Headstone APA' %>
+
+        <label>Style</label>
+        <%= f.text_field :style, placeholder: 'American Pale Ale' %>
+
+        <label>Lower Fermentation Boundary</label>
+        <%= f.text_field :lower_fermentation_temperature, caption: '18.0' %>
+
+        <label>Upper Fermentation Boundary</label>
+        <%= f.text_field :upper_fermentation_temperature, caption: '22.0' %>
+
+      </fieldset>
+
+      <%= f.submit 'Create', :class => "button" %>
+    </div>
+  </div>
+<% end %>

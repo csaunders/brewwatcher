@@ -10,6 +10,8 @@ module Datastore
       database: 'db/db.sqlite'
     )
     ActiveRecord::Base.include_root_in_json = false
+    ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
+    ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
 
     parse_to_commands(File.read('db/schema.sql')).each do |cmd|
       ActiveRecord::Base.connection.execute cmd
@@ -39,7 +41,14 @@ class Brew < ActiveRecord::Base
     Brew.where(active: true).first
   end
 
+  def activate!
+    Brew.update_all("active = 0", ["id NOT IN (?)", id])
+    self.active = true
+    save!
+  end
+
   def average_temp
+    return nil if temperatures.count == 0
     temperatures.inject(0){|r, t| r += t.reading} / temperatures.count
   end
 

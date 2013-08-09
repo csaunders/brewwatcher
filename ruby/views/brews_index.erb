@@ -2,32 +2,45 @@
 <h1>Brew Watcher</h1>
 <% end %>
 
+</div>
 <div class="row">
-  <div class="small-8 columns">
-
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Brew Name</th>
-          <th>Data points</th>
-          <th>Average Fermentation Temp</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% for brew in @brews %>
-        <tr>
-          <td><a href="/brews/<%= brew.id %>"><%= brew.name %></a></td>
-          <td><%= brew.temperatures.count %></td>
-          <td><%= brew.average_temp %></td>
-          <td></td>
-        </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <div class="large-8 columns offset-1">
+  <% if @brews.length > 0 %>
+  <div>
+    <a class="button" href="/brews/new">Add another Brew</a>
   </div>
-  <div class="small-4 columns">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Brew Name</th>
+        <th>Data points</th>
+        <th>Average Fermentation Temp</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% for brew in @brews %>
+      <tr>
+        <td><a href="/brews/<%= brew.id %>"><%= brew.name %></a></td>
+        <td><%= brew.temperatures.count %></td>
+        <td><%= brew.average_temp %></td>
+        <td></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% else %>
+  <div class="large-centered panel callout">
+    <h2>No Brews Yet!</h2>
+    <p class="subheader">
+      Before we can start taking measurements, you'll need to create a brew to monitor.
+    </p>
+    <p class="text-center"><a href="/brews/new" class="button success">Create first Brew</a><p>
+    </div>
+  <% end %>
+  </div>
+  <div class="large-3 columns">
     <%= erb :control_panel %>
   </div>
 </div>
