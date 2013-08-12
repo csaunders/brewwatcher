@@ -2,9 +2,30 @@
 <h1>Current Arduino TTY Configuration</h1>
 <% end %>
 
+<% if @connected && !@connected[:connection] %>
+<div class="row">
+  <div class="large-6 columns panel large-centered">
+    <h4>The test for <%= @active_tty.name %> failed.</h4>
+    <p><a href="/tty/configure">Reconfigure your Active TTY</a></p>
+  </div>
+</div>
+<% end %>
+
 <div class="row">
   <div class="large-6 columns">
+    <dl>
+      <dt>Currently Configured TTY</dt>
+      <dd><%= @active_tty.name %></dd>
+    </dl>
   </div>
+
   <div class="large-6 columns">
+    <div class="panel">
+      <h3 class="subheader">Actions</h3>
+      <p>
+        You can verify that the chosen TTY is an Arduino
+        <a href="/tty/test" class="button small button-secondary">Test Connection</a>
+      </p>
+    </div>
   </div>
 </div>

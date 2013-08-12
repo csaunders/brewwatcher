@@ -15,13 +15,14 @@ end
 
 class BreadcrumbBuilder
   def self.build_crumbs(path)
-    slices = path.split('/')
+    slices = path.split('/').reject{|s| s.length == 0}
     current_path = []
     @crumbs = slices.map do |path|
       current_path << path
       name = path =~ /\d+/ ? Brew.find(path.to_i).name : path
       Breadcrumb.new(name, current_path.join('/'))
     end
+    @crumbs.unshift(Breadcrumb.new('Home', '/'))
   end
 end
 
@@ -94,8 +95,7 @@ class Web < Sinatra::Base
   end
 
   get '/tty' do
-    @tty = ActiveTty.first
-    if @tty
+    if @active_tty
       erb :"tty_index"
     else
       redirect '/tty/configure'
@@ -112,6 +112,20 @@ class Web < Sinatra::Base
     @tty = ActiveTty.first_or_initialize
     @tty.update_attributes(name: params[:tty][:name])
     redirect '/tty'
+  end
+
+  get '/tty/test' do
+    @active_tty = ActiveTty.first_or_initialize
+    begin
+      @communicator = Serial::Communicator.new(@active_tty.device)
+      @connected = {connection: @communicator.read_message ? true : false}
+    rescue
+      @connected = {connection: false}
+    end
+    perform_render view: :"tty_index"
+  end
+
+  post '/tty/test' do
   end
 
   private
