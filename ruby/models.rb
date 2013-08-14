@@ -4,16 +4,18 @@ require 'time'
 
 module Datastore
   COMMAND = "--execcmd"
+  DATABASE = File.dirname(__FILE__) + '/db/db.sqlite'
+  SCHEMA = File.dirname(__FILE__) + '/db/schema.sql'
   def self.connect!
     ActiveRecord::Base.establish_connection(
       adapter: 'sqlite3',
-      database: 'db/db.sqlite'
+      database: DATABASE
     )
     ActiveRecord::Base.include_root_in_json = false
     ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
     ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
 
-    parse_to_commands(File.read('db/schema.sql')).each do |cmd|
+    parse_to_commands(File.read(SCHEMA)).each do |cmd|
       ActiveRecord::Base.connection.execute cmd
     end
   end
