@@ -141,7 +141,7 @@ class Web < Sinatra::Base
   end
 
   def communicator
-    @communicator ||= Serial::Communicator.new('/dev/tty.usbmodem1431')
+    @communicator ||= Serial::Communicator.new(@active_tty.device)
   end
 
   def json?
