@@ -85,12 +85,20 @@ class Web < Sinatra::Base
   end
 
   get '/panel/enable' do
-    communicator.enable_display
+    Thread.new do
+      communicator.warmup
+      communicator.enable_display
+      communicator.done!
+    end
     redirect '/brews'
   end
 
   get '/panel/disable' do
-    communicator.disable_display
+    Thread.new do
+      communicator.warmup
+      communicator.disable_display
+      communicator.done!
+    end
     redirect '/brews'
   end
 
@@ -118,8 +126,10 @@ class Web < Sinatra::Base
     @active_tty = ActiveTty.first_or_initialize
     begin
       @communicator = Serial::Communicator.new(@active_tty.device)
-      @connected = {connection: @communicator.read_message ? true : false}
-    rescue
+      @communicator.warmup
+      @communicator.done!
+      @connected = {connection: true}
+    rescue => e
       @connected = {connection: false}
     end
     perform_render view: :"tty_index"

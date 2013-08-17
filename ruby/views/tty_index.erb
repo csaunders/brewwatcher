@@ -2,13 +2,23 @@
 <h1>Current Arduino TTY Configuration</h1>
 <% end %>
 
-<% if @connected && !@connected[:connection] %>
-<div class="row">
-  <div class="large-6 columns panel large-centered">
-    <h4>The test for <%= @active_tty.name %> failed.</h4>
-    <p><a href="/tty/configure">Reconfigure your Active TTY</a></p>
+<% if @connected %>
+  <% if @connected[:connection] %>
+  <div class="row">
+    <div class="large-6 columns">
+      <div data-alert class="alert-box success">
+        <p>Communication with <%= @active_tty.name %> was successful!</p>
+      </div>
+    </div>
   </div>
-</div>
+  <% else %>
+  <div class="row">
+    <div class="large-6 columns panel large-centered">
+      <h4>The test for <%= @active_tty.name %> failed.</h4>
+      <p><a href="/tty/configure">Reconfigure your Active TTY</a></p>
+    </div>
+  </div>
+  <% end %>
 <% end %>
 
 <div class="row">
